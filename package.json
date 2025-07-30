@@ -8,6 +8,7 @@
   "types": "./dist/react-native.d.ts",
   "scripts": {
     "release": "release-it",
+    "semantic-release": "semantic-release",
     "build": "rozenite build",
     "dev": "rozenite dev"
   },
@@ -31,6 +32,7 @@
     "react-native-web": "0.21.0",
     "release-it": "^19.0.4",
     "rozenite": "1.0.0-alpha.3",
+    "semantic-release": "^24.2.7",
     "typescript": "^5.7.3",
     "vite": "^6.0.0"
   },
@@ -38,5 +40,8 @@
     "react": "*",
     "react-native": "*"
   },
-  "license": "MIT"
+  "license": "MIT",
+  "release": {
+    "repositoryUrl": "https://github.com/matinzd/rozenite-preview"
+  }
 }
