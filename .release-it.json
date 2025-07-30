@@ -1,0 +1,25 @@
+{
+  "$schema": "https://unpkg.com/release-it@19/schema/release-it.json",
+  "git": {
+    "commitMessage": "chore(release): v${version} [skip ci]"
+  },
+  "github": {
+    "release": true,
+    "comments": {
+      "submit": true,
+      "issue": ":rocket: _This issue has been resolved in v${version}. See [${releaseName}](${releaseUrl}) for release notes._",
+      "pr": ":rocket: _This pull request is included in v${version}. See [${releaseName}](${releaseUrl}) for release notes._"
+    }
+  },
+  "hooks": {
+    "before:init": "bun run build"
+  },
+  "plugins": {
+    "@release-it/conventional-changelog": {
+      "preset": {
+        "name": "angular"
+      },
+      "infile": "CHANGELOG.md"
+    }
+  }
+}

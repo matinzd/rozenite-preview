@@ -1,6 +1,6 @@
 import {
-    getRozeniteDevToolsClient,
-    RozeniteDevToolsClient,
+  getRozeniteDevToolsClient,
+  RozeniteDevToolsClient,
 } from "@rozenite/plugin-bridge";
 import { PreviewPluginEventMap } from "../shared/messaging";
 import { PREVIEW_PLUGIN_ID } from "../shared/types";
@@ -26,7 +26,6 @@ function processPendingRegistrations() {
     `Processing ${pendingRegistrations.length} pending preview registrations`
   );
 
-  // Send all pending registrations
   pendingRegistrations.forEach(({ name, component }) => {
     client!.send("preview-added", {
       name,
@@ -34,7 +33,6 @@ function processPendingRegistrations() {
     });
   });
 
-  // Clear the queue
   pendingRegistrations.length = 0;
 }
 

@@ -5,7 +5,6 @@ import { Preview, PREVIEW_PLUGIN_ID } from "../shared/types";
 import "./preview-panel.css";
 
 export default function PreviewPanel() {
-  const [state, setState] = useState("Loading...");
   const client = useRozeniteDevToolsClient<PreviewPluginEventMap>({
     pluginId: PREVIEW_PLUGIN_ID,
   });
@@ -14,7 +13,6 @@ export default function PreviewPanel() {
 
   useEffect(() => {
     if (!client) {
-      setState("Client not initialized");
       return;
     }
 
@@ -24,23 +22,19 @@ export default function PreviewPanel() {
       setPreviews((prev) => {
         const existingIndex = prev.findIndex((p) => p.name === preview.name);
         if (existingIndex !== -1) {
-          // Replace the old preview with the new one
           const updated = [...prev];
           updated[existingIndex] = preview;
           return updated;
         }
-        // Add new preview if it doesn't exist
         return [...prev, preview];
       });
     });
 
     const previewListSubscription = client.onMessage("preview-list", (data) => {
-      setState("Received preview list");
       setPreviews(data);
     });
 
     client.send("request-initial-data", {});
-    setState("Initial data requested");
 
     return () => {
       previewSubscription.remove();
@@ -52,21 +46,6 @@ export default function PreviewPanel() {
     if (!client) return;
 
     client.send("preview-select", { name });
-  };
-
-  const getStatusClass = (status: string) => {
-    if (status.includes("Loading")) return "status-loading";
-    if (status.includes("not initialized")) return "status-error";
-    if (status.includes("added") || status.includes("Received"))
-      return "status-success";
-    return "status-default";
-  };
-
-  const getStatusIcon = (status: string) => {
-    if (status.includes("Loading")) return "⏳";
-    if (status.includes("not initialized")) return "❌";
-    if (status.includes("added") || status.includes("Received")) return "✅";
-    return "ℹ️";
   };
 
   return (

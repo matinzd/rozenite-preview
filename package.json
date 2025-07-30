@@ -1,5 +1,5 @@
 {
-  "name": "component-previewer",
+  "name": "rozenite-preview",
   "version": "0.0.1",
   "description": "Preview selected components from your React Native app in isolation, directly from DevTools. Ideal for rapid UI prototyping, component testing, or debugging in complex apps.",
   "type": "module",
@@ -7,22 +7,30 @@
   "module": "./dist/react-native.js",
   "types": "./dist/react-native.d.ts",
   "scripts": {
+    "release": "release-it",
     "build": "rozenite build",
     "dev": "rozenite dev"
+  },
+  "publishConfig": {
+    "registry": "https://registry.npmjs.org/",
+    "access": "public",
+    "provenance": true
   },
   "dependencies": {
     "@rozenite/plugin-bridge": "1.0.0-alpha.6"
   },
   "devDependencies": {
+    "@release-it/conventional-changelog": "^10.0.1",
     "@rozenite/vite-plugin": "1.0.0-alpha.6",
-    "@types/react": "~18.3.23",
+    "@types/react": "~18.3.12",
     "react": "18.3.1",
     "react-dom": "18.3.0",
     "react-native": "0.76.0",
     "react-native-web": "0.21.0",
+    "release-it": "^19.0.4",
     "rozenite": "1.0.0-alpha.3",
-    "typescript": "^5.8.3",
-    "vite": "^6.3.5"
+    "typescript": "^5.7.3",
+    "vite": "^6.0.0"
   },
   "peerDependencies": {
     "react": "*",
