@@ -1,8 +1,74 @@
 /* PreviewPanel.css */
 
+:root {
+  /* Light mode colors */
+  --bg-primary: #f9fafb;
+  --bg-secondary: #f3f4f6;
+  --bg-card: #ffffff;
+  --bg-elevated: #f9fafb;
+  --bg-overlay: rgba(59, 130, 246, 0.05);
+  --bg-overlay-secondary: rgba(139, 92, 246, 0.05);
+  --bg-debug: #111827;
+  
+  --border-primary: #e5e7eb;
+  --border-secondary: #f3f4f6;
+  --border-hover: #93c5fd;
+  
+  --text-primary: #111827;
+  --text-secondary: #374151;
+  --text-tertiary: #6b7280;
+  --text-muted: #9ca3af;
+  --text-accent: #2563eb;
+  --text-debug: #10b981;
+  
+  --shadow-sm: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
+  --shadow-lg: 0 10px 25px -3px rgba(0, 0, 0, 0.1);
+  --shadow-focus: 0 0 0 2px #3b82f6, 0 0 0 4px rgba(59, 130, 246, 0.1);
+  
+  --gradient-bg: linear-gradient(135deg, #f9fafb 0%, #f3f4f6 100%);
+  --gradient-icon: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%);
+  --gradient-card: linear-gradient(135deg, white 0%, #f9fafb 100%);
+  --gradient-preview-icon: linear-gradient(135deg, #dbeafe 0%, #e0e7ff 100%);
+  --gradient-preview-icon-hover: linear-gradient(135deg, #bfdbfe 0%, #c7d2fe 100%);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    /* Dark mode colors */
+    --bg-primary: #0f172a;
+    --bg-secondary: #1e293b;
+    --bg-card: #1e293b;
+    --bg-elevated: #334155;
+    --bg-overlay: rgba(59, 130, 246, 0.1);
+    --bg-overlay-secondary: rgba(139, 92, 246, 0.1);
+    --bg-debug: #0f172a;
+    
+    --border-primary: #334155;
+    --border-secondary: #475569;
+    --border-hover: #60a5fa;
+    
+    --text-primary: #f8fafc;
+    --text-secondary: #cbd5e1;
+    --text-tertiary: #94a3b8;
+    --text-muted: #64748b;
+    --text-accent: #60a5fa;
+    --text-debug: #34d399;
+    
+    --shadow-sm: 0 1px 3px 0 rgba(0, 0, 0, 0.3);
+    --shadow-lg: 0 10px 25px -3px rgba(0, 0, 0, 0.4);
+    --shadow-focus: 0 0 0 2px #60a5fa, 0 0 0 4px rgba(96, 165, 250, 0.2);
+    
+    --gradient-bg: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+    --gradient-icon: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%);
+    --gradient-card: linear-gradient(135deg, #1e293b 0%, #334155 100%);
+    --gradient-preview-icon: linear-gradient(135deg, #1e3a8a 0%, #3730a3 100%);
+    --gradient-preview-icon-hover: linear-gradient(135deg, #1d4ed8 0%, #4338ca 100%);
+  }
+}
+
 .preview-panel {
   min-height: 100vh;
-  background: linear-gradient(135deg, #f9fafb 0%, #f3f4f6 100%);
+  background: var(--gradient-bg);
   padding: 24px;
 }
 
@@ -13,10 +79,10 @@
 
 /* Header Section */
 .header-card {
-  background: white;
+  background: var(--bg-card);
   border-radius: 16px;
-  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
-  border: 1px solid #e5e7eb;
+  box-shadow: var(--shadow-sm);
+  border: 1px solid var(--border-primary);
   padding: 32px;
   margin-bottom: 32px;
 }
@@ -31,23 +97,24 @@
 .header-icon {
   width: 48px;
   height: 48px;
-  background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%);
+  background: var(--gradient-icon);
   border-radius: 12px;
   display: flex;
   align-items: center;
   justify-content: center;
   font-size: 20px;
+  color: white;
 }
 
 .header-text h1 {
   font-size: 30px;
   font-weight: 700;
-  color: #111827;
+  color: var(--text-primary);
   margin: 0 0 4px 0;
 }
 
 .header-text p {
-  color: #6b7280;
+  color: var(--text-tertiary);
   margin: 0;
 }
 
@@ -56,9 +123,9 @@
   align-items: center;
   gap: 12px;
   padding: 16px;
-  background: #f9fafb;
+  background: var(--bg-elevated);
   border-radius: 12px;
-  border: 1px solid #e5e7eb;
+  border: 1px solid var(--border-primary);
 }
 
 .status-icon {
@@ -68,7 +135,7 @@
 .status-text {
   font-size: 14px;
   font-weight: 500;
-  color: #374151;
+  color: var(--text-secondary);
 }
 
 .status-value {
@@ -79,20 +146,20 @@
 .status-loading { color: #3b82f6; }
 .status-error { color: #ef4444; }
 .status-success { color: #10b981; }
-.status-default { color: #6b7280; }
+.status-default { color: var(--text-tertiary); }
 
 /* Previews Section */
 .previews-card {
-  background: white;
+  background: var(--bg-card);
   border-radius: 16px;
-  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
-  border: 1px solid #e5e7eb;
+  box-shadow: var(--shadow-sm);
+  border: 1px solid var(--border-primary);
   overflow: hidden;
 }
 
 .previews-header {
   padding: 24px;
-  border-bottom: 1px solid #f3f4f6;
+  border-bottom: 1px solid var(--border-secondary);
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -101,7 +168,7 @@
 .previews-title {
   font-size: 20px;
   font-weight: 600;
-  color: #111827;
+  color: var(--text-primary);
   margin: 0;
 }
 
@@ -110,7 +177,7 @@
   align-items: center;
   gap: 8px;
   padding: 4px 12px;
-  background: #eff6ff;
+  background: rgba(59, 130, 246, 0.1);
   border-radius: 9999px;
 }
 
@@ -124,7 +191,7 @@
 .count-text {
   font-size: 14px;
   font-weight: 500;
-  color: #1d4ed8;
+  color: var(--text-accent);
 }
 
 .previews-content {
@@ -140,25 +207,25 @@
 .empty-icon {
   width: 64px;
   height: 64px;
-  background: #f3f4f6;
+  background: var(--bg-elevated);
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
   margin: 0 auto 16px;
   font-size: 32px;
-  color: #9ca3af;
+  color: var(--text-muted);
 }
 
 .empty-title {
   font-size: 18px;
   font-weight: 500;
-  color: #111827;
+  color: var(--text-primary);
   margin: 0 0 8px 0;
 }
 
 .empty-description {
-  color: #6b7280;
+  color: var(--text-tertiary);
   margin: 0;
 }
 
@@ -185,8 +252,8 @@
 .preview-card {
   position: relative;
   padding: 24px;
-  background: linear-gradient(135deg, white 0%, #f9fafb 100%);
-  border: 1px solid #e5e7eb;
+  background: var(--gradient-card);
+  border: 1px solid var(--border-primary);
   border-radius: 12px;
   text-align: left;
   cursor: pointer;
@@ -195,14 +262,14 @@
 }
 
 .preview-card:hover {
-  box-shadow: 0 10px 25px -3px rgba(0, 0, 0, 0.1);
-  border-color: #93c5fd;
+  box-shadow: var(--shadow-lg);
+  border-color: var(--border-hover);
   transform: translateY(-1px);
 }
 
 .preview-card:focus {
   outline: none;
-  box-shadow: 0 0 0 2px #3b82f6, 0 0 0 4px rgba(59, 130, 246, 0.1);
+  box-shadow: var(--shadow-focus);
 }
 
 .preview-card-header {
@@ -215,18 +282,18 @@
 .preview-icon {
   width: 40px;
   height: 40px;
-  background: linear-gradient(135deg, #dbeafe 0%, #e0e7ff 100%);
+  background: var(--gradient-preview-icon);
   border-radius: 8px;
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #2563eb;
+  color: var(--text-accent);
   font-weight: 700;
   transition: all 0.2s ease;
 }
 
 .preview-card:hover .preview-icon {
-  background: linear-gradient(135deg, #bfdbfe 0%, #c7d2fe 100%);
+  background: var(--gradient-preview-icon-hover);
 }
 
 .preview-name {
@@ -236,7 +303,7 @@
 
 .preview-title {
   font-weight: 600;
-  color: #111827;
+  color: var(--text-primary);
   margin: 0;
   white-space: nowrap;
   overflow: hidden;
@@ -245,7 +312,7 @@
 }
 
 .preview-card:hover .preview-title {
-  color: #2563eb;
+  color: var(--text-accent);
 }
 
 .preview-arrow {
@@ -260,14 +327,14 @@
 
 .preview-description {
   font-size: 14px;
-  color: #6b7280;
+  color: var(--text-tertiary);
   margin: 0;
 }
 
 .preview-overlay {
   position: absolute;
   inset: 0;
-  background: linear-gradient(90deg, rgba(59, 130, 246, 0.05) 0%, rgba(139, 92, 246, 0.05) 100%);
+  background: linear-gradient(90deg, var(--bg-overlay) 0%, var(--bg-overlay-secondary) 100%);
   border-radius: 12px;
   opacity: 0;
   transition: opacity 0.2s ease;
@@ -286,10 +353,10 @@
 .debug-summary {
   cursor: pointer;
   padding: 16px;
-  background: white;
+  background: var(--bg-card);
   border-radius: 12px;
-  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
-  border: 1px solid #e5e7eb;
+  box-shadow: var(--shadow-sm);
+  border: 1px solid var(--border-primary);
   transition: background-color 0.2s ease;
   display: flex;
   align-items: center;
@@ -297,17 +364,17 @@
 }
 
 .debug-summary:hover {
-  background: #f9fafb;
+  background: var(--bg-elevated);
 }
 
 .debug-title {
   font-weight: 500;
-  color: #374151;
+  color: var(--text-secondary);
   margin: 0;
 }
 
 .debug-arrow {
-  color: #9ca3af;
+  color: var(--text-muted);
   transition: transform 0.2s ease;
   font-size: 12px;
 }
@@ -319,13 +386,14 @@
 .debug-content {
   margin-top: 8px;
   padding: 16px;
-  background: #111827;
+  background: var(--bg-debug);
   border-radius: 12px;
   overflow: auto;
+  border: 1px solid var(--border-primary);
 }
 
 .debug-pre {
-  color: #10b981;
+  color: var(--text-debug);
   font-size: 14px;
   font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
   white-space: pre-wrap;
