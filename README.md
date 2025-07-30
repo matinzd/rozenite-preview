@@ -15,11 +15,11 @@ A comprehensive toolkit for creating, developing, and integrating custom plugins
 ## Installation
 
 ```sh
-bun add -D rozenite-preview
+bun add -D rozenite-preview@alpha
 # or
-npm install --save-dev rozenite-preview
+npm install --save-dev rozenite-preview@alpha
 # or
-yarn add -D rozenite-preview
+yarn add -D rozenite-preview@alpha
 ```
 
 ## Usage
@@ -27,7 +27,7 @@ yarn add -D rozenite-preview
 1. **Register your components for preview:**
 
 ```ts
-import { registerPreview } from "rozenite-preview";
+import { registerPreview } from "rozenite-preview@alpha";
 
 registerPreview("MyButton", MyButton);
 registerPreview("UserCard", UserCard);
