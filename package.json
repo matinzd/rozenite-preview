@@ -1,6 +1,6 @@
 {
   "name": "rozenite-preview",
-  "version": "0.0.1",
+  "version": "0.0.2-beta.0",
   "description": "Preview selected components from your React Native app in isolation, directly from DevTools. Ideal for rapid UI prototyping, component testing, or debugging in complex apps.",
   "type": "module",
   "main": "./dist/react-native.cjs",
