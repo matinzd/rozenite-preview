@@ -7,7 +7,7 @@
   "module": "./dist/react-native.js",
   "types": "./dist/react-native.d.ts",
   "scripts": {
-    "prepare": "bun run build",
+    "prepublishOnly": "bun run build",
     "semantic-release": "semantic-release",
     "build": "rozenite build",
     "dev": "rozenite dev"
