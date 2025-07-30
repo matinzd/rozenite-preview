@@ -1,4 +1,12 @@
 import { useRozeniteDevToolsClient } from "@rozenite/plugin-bridge";
+import {
+  Code,
+  Eye,
+  Package,
+  Play,
+  RefreshCw,
+  Search
+} from "lucide-react";
 import { useEffect, useState } from "react";
 import { PreviewPluginEventMap } from "../shared/messaging";
 import { Preview, PREVIEW_PLUGIN_ID } from "../shared/types";
@@ -9,7 +17,17 @@ export default function PreviewPanel() {
     pluginId: PREVIEW_PLUGIN_ID,
   });
 
+  const [isRefreshing, setIsRefreshing] = useState(false);
+
+  const [searchTerm, setSearchTerm] = useState("");
+
+  const [selectedPreview, setSelectedPreview] = useState<string | null>(null);
+
   const [previews, setPreviews] = useState<Preview[]>([]);
+
+  const filteredPreviews = previews.filter((preview) =>
+    preview.name.toLowerCase().includes(searchTerm.toLowerCase())
+  );
 
   useEffect(() => {
     if (!client) {
@@ -46,109 +64,130 @@ export default function PreviewPanel() {
     if (!client) return;
 
     client.send("preview-select", { name });
+    setSelectedPreview(name);
   };
 
   const showMainApp = () => {
-    if (!client) return;  
+    if (!client) return;
 
     client.send("preview-clear", {});
   };
 
+  const refreshPreviews = async () => {
+    if (!client) return;
+
+    setIsRefreshing(true);
+    client.send("request-initial-data", {});
+    setTimeout(() => setIsRefreshing(false), 500);
+  };
+
   return (
-    <div className="preview-panel">
-      <div className="preview-container">
-        {/* Header Section */}
-        <div className="header-card">
-          <div className="header-content">
-            <div className="header-icon">
-              <span>👁️</span>
-            </div>
-            <div className="header-text">
-              <h1>Preview Panel</h1>
-              <p>Select your component to open the preview on the simulator</p>
-            </div>
-            <button
-              className="show-main-app-btn"
-              onClick={showMainApp}
-              title="Show Main App"
-              style={{
-                marginLeft: 'auto',
-                padding: '6px 14px',
-                borderRadius: '6px',
-                border: 'none',
-                background: '#2d72d9',
-                color: 'white',
-                fontWeight: 500,
-                cursor: 'pointer',
-                fontSize: '0.95em',
-                boxShadow: '0 1px 3px rgba(0,0,0,0.04)'
-              }}
-            >
-              Show Main App
-            </button>
+    <div className="devtools-preview-panel">
+      {/* Toolbar */}
+      <div className="toolbar">
+        <div className="toolbar-left">
+          <div className="search-container">
+            <Search className="search-icon" size={14} />
+            <input
+              type="text"
+              placeholder="Filter components..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="search-input"
+            />
           </div>
         </div>
 
-        {/* Previews Section */}
-        <div className="previews-card">
-          <div className="previews-header">
-            <h2 className="previews-title">Available Previews</h2>
-            <div className="preview-count">
-              <span className="count-dot"></span>
-              <span className="count-text">{previews.length} available</span>
-            </div>
-          </div>
+        <div className="toolbar-right">
+          <button
+            className="toolbar-btn"
+            onClick={refreshPreviews}
+            disabled={isRefreshing}
+            title="Refresh components"
+          >
+            <RefreshCw
+              className={`icon ${isRefreshing ? "spin" : ""}`}
+              size={14}
+            />
+          </button>
+          <button
+            className="toolbar-btn"
+            onClick={showMainApp}
+            title="Show main app"
+          >
+            <Eye className="icon" size={14} />
+          </button>
+        </div>
+      </div>
 
-          <div className="previews-content">
-            {previews.length === 0 ? (
-              <div className="empty-state">
-                <div className="empty-icon">
-                  <span>📦</span>
-                </div>
-                <h3 className="empty-title">No previews available</h3>
-                <p className="empty-description">
-                  Components will appear here once they're loaded
-                </p>
-              </div>
-            ) : (
-              <div className="preview-grid">
-                {previews.map((preview) => (
-                  <button
-                    key={preview.name}
-                    onClick={() => onPreviewSelect(preview.name)}
-                    className="preview-card"
-                  >
-                    <div className="preview-card-header">
-                      <div className="preview-icon">
-                        <span>⚡</span>
-                      </div>
-                      <div className="preview-name">
-                        <h3 className="preview-title">{preview.name}</h3>
-                      </div>
-                      <div className="preview-arrow">
-                        <span>→</span>
-                      </div>
-                    </div>
+      {/* Status Bar */}
+      <div className="status-bar">
+        <div className="status-left">
+          <span className="status-text">
+            {filteredPreviews.length} component
+            {filteredPreviews.length !== 1 ? "s" : ""} available
+          </span>
+          {selectedPreview !== null && (
+            <>
+              <span className="status-separator">•</span>
+              <span className="status-text active">
+                Previewing: {selectedPreview}
+              </span>
+            </>
+          )}
+        </div>
+      </div>
 
-                    {/* Hover effect overlay */}
-                    <div className="preview-overlay"></div>
-                  </button>
-                ))}
-              </div>
+      {/* Content */}
+      <div className="content">
+        {filteredPreviews.length === 0 ? (
+          <div className="empty-state">
+            <Package className="empty-icon" size={48} />
+            <h3 className="empty-title">
+              {searchTerm
+                ? "No matching components"
+                : "No components registered"}
+            </h3>
+            <p className="empty-description">
+              {searchTerm
+                ? `No components match "${searchTerm}"`
+                : "Register components using registerPreview() to see them here"}
+            </p>
+            {searchTerm && (
+              <button
+                className="clear-search-btn"
+                onClick={() => setSearchTerm("")}
+              >
+                Clear search
+              </button>
             )}
           </div>
-        </div>
-
-        {/* Debug Information (collapsible) */}
-        <details className="debug-section">
-          <summary className="debug-summary">
-            <span className="debug-title">Debug Information</span>
-            <span className="debug-arrow">▼</span>
-          </summary>
-          <div className="debug-content">
-            <pre className="debug-pre">{JSON.stringify(previews, null, 2)}</pre>
+        ) : (
+          <div className="component-list">
+            {filteredPreviews.map((preview) => (
+              <div
+                key={preview.name}
+                className={`component-item ${
+                  selectedPreview === preview.name ? "selected" : ""
+                }`}
+                onClick={() => onPreviewSelect(preview.name)}
+              >
+                <div className="component-info">
+                  <div className="component-header">
+                    <Code className="component-icon" size={16} />
+                    <span className="component-name">{preview.name}</span>
+                  </div>
+                  {preview.path && (
+                    <div className="component-path">{preview.path}</div>
+                  )}
+                </div>
+                <button className="preview-btn" title="Preview component">
+                  <Play size={12} />
+                </button>
+              </div>
+            ))}
           </div>
-        </details>
+        )}
       </div>
     </div>
   );

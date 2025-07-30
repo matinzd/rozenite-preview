@@ -1,6 +1,7 @@
 export interface Preview {
   component: React.ComponentType;
   name: string;
+  path?: string; // TODO: Path to the component file
 }
 
 export type DevToolsActionType =
