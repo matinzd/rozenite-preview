@@ -31,8 +31,17 @@ export const PreviewHost = (props: PreviewHostProps): JSX.Element => {
       }
     );
 
+    const removePreviewClearListener = client.onMessage(
+      "preview-clear",
+      () => {
+        setPreviewName(null);
+        setComponent(null);
+      }
+    );
+
     return () => {
       removePreviewSelectListener.remove();
+      removePreviewClearListener.remove();
     };
   }, [client]);
 

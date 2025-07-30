@@ -48,6 +48,12 @@ export default function PreviewPanel() {
     client.send("preview-select", { name });
   };
 
+  const showMainApp = () => {
+    if (!client) return;  
+
+    client.send("preview-clear", {});
+  };
+
   return (
     <div className="preview-panel">
       <div className="preview-container">
@@ -61,6 +67,25 @@ export default function PreviewPanel() {
               <h1>Preview Panel</h1>
               <p>Select your component to open the preview on the simulator</p>
             </div>
+            <button
+              className="show-main-app-btn"
+              onClick={showMainApp}
+              title="Show Main App"
+              style={{
+                marginLeft: 'auto',
+                padding: '6px 14px',
+                borderRadius: '6px',
+                border: 'none',
+                background: '#2d72d9',
+                color: 'white',
+                fontWeight: 500,
+                cursor: 'pointer',
+                fontSize: '0.95em',
+                boxShadow: '0 1px 3px rgba(0,0,0,0.04)'
+              }}
+            >
+              Show Main App
+            </button>
           </div>
         </div>
 
