@@ -11,6 +11,9 @@
     "build": "rozenite build",
     "dev": "rozenite dev"
   },
+  "repository": {
+    "url": "https://github.com/matinzd/rozenite-preview"
+  },
   "publishConfig": {
     "registry": "https://registry.npmjs.org/",
     "access": "public"
