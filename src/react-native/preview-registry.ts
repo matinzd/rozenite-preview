@@ -13,7 +13,6 @@ export async function registerPreview(
 
   if (!client) {
     pendingRegistrations.push({ name, component });
-    console.log(`Preview "${name}" queued for registration`);
     return;
   }
 

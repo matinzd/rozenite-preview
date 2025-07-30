@@ -39,8 +39,6 @@ function processPendingRegistrations() {
 async function setupPlugin() {
   const existingClient = await getClient();
 
-  console.log("Setting up preview plugin", existingClient);
-
   client = existingClient;
 
   processPendingRegistrations();
@@ -48,7 +46,6 @@ async function setupPlugin() {
   existingClient.onMessage("request-initial-data", () => {
     const previews = getPreviewComponents();
     existingClient.send("preview-list", previews);
-    console.log("Initial preview data sent:", previews);
   });
 }
 
