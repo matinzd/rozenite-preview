@@ -17,7 +17,8 @@
   },
   "publishConfig": {
     "registry": "https://registry.npmjs.org/",
-    "access": "public"
+    "access": "public",
+    "provenance": true
   },
   "dependencies": {
     "@rozenite/plugin-bridge": "1.0.0-alpha.6"
