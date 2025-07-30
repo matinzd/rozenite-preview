@@ -1,0 +1,32 @@
+{
+  "name": "component-previewer",
+  "version": "0.0.1",
+  "description": "Preview selected components from your React Native app in isolation, directly from DevTools. Ideal for rapid UI prototyping, component testing, or debugging in complex apps.",
+  "type": "module",
+  "main": "./dist/react-native.cjs",
+  "module": "./dist/react-native.js",
+  "types": "./dist/react-native.d.ts",
+  "scripts": {
+    "build": "rozenite build",
+    "dev": "rozenite dev"
+  },
+  "dependencies": {
+    "@rozenite/plugin-bridge": "1.0.0-alpha.6"
+  },
+  "devDependencies": {
+    "@rozenite/vite-plugin": "1.0.0-alpha.6",
+    "@types/react": "~18.3.23",
+    "react": "18.3.1",
+    "react-dom": "18.3.0",
+    "react-native": "0.76.0",
+    "react-native-web": "0.21.0",
+    "rozenite": "1.0.0-alpha.3",
+    "typescript": "^5.8.3",
+    "vite": "^6.3.5"
+  },
+  "peerDependencies": {
+    "react": "*",
+    "react-native": "*"
+  },
+  "license": "MIT"
+}
