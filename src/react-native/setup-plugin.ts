@@ -8,40 +8,14 @@ import { getPreviewComponents } from "./preview-registry";
 
 export let client: RozeniteDevToolsClient<PreviewPluginEventMap> | null = null;
 
-export const pendingRegistrations: Array<{
-  name: string;
-  component: React.ComponentType;
-}> = [];
-
 export const getClient = () => {
   return getRozeniteDevToolsClient<PreviewPluginEventMap>(PREVIEW_PLUGIN_ID);
 };
-
-function processPendingRegistrations() {
-  if (!client || pendingRegistrations.length === 0) {
-    return;
-  }
-
-  console.log(
-    `Processing ${pendingRegistrations.length} pending preview registrations`
-  );
-
-  pendingRegistrations.forEach(({ name, component }) => {
-    client!.send("preview-added", {
-      name,
-      component,
-    });
-  });
-
-  pendingRegistrations.length = 0;
-}
 
 async function setupPlugin() {
   const existingClient = await getClient();
 
   client = existingClient;
-
-  processPendingRegistrations();
 
   existingClient.onMessage("request-initial-data", () => {
     const previews = getPreviewComponents();

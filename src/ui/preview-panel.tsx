@@ -2,14 +2,15 @@ import { useRozeniteDevToolsClient } from "@rozenite/plugin-bridge";
 import {
   Code,
   Eye,
+  FileCode,
   Package,
   Play,
   RefreshCw,
-  Search
+  Search,
 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { PreviewPluginEventMap } from "../shared/messaging";
-import { Preview, PREVIEW_PLUGIN_ID } from "../shared/types";
+import { Metadata, Preview, PREVIEW_PLUGIN_ID } from "../shared/types";
 import "./preview-panel.css";
 
 export default function PreviewPanel() {
@@ -79,6 +80,23 @@ export default function PreviewPanel() {
     setIsRefreshing(true);
     client.send("request-initial-data", {});
     setTimeout(() => setIsRefreshing(false), 500);
+  };
+
+  const getPathWithLineAndColumn = (metadata: Metadata) => {
+    const { relativeFilename, line, column } = metadata;
+
+    return `${relativeFilename}${line ? `:${line}` : ""}${
+      column ? `:${column}` : ""
+    }`;
+  };
+
+  const navigateToFileInVscode = (metadata: Metadata) => {
+    const { filePath, line, column } = metadata;
+    const vscodeUrl = `vscode://file/${filePath}${line ? `:${line}` : ""}${
+      column ? `:${column}` : ""
+    }`;
+
+    window.open(vscodeUrl, "_blank");
   };
 
   return (
@@ -177,13 +195,29 @@ export default function PreviewPanel() {
                     <Code className="component-icon" size={16} />
                     <span className="component-name">{preview.name}</span>
                   </div>
-                  {preview.path && (
-                    <div className="component-path">{preview.path}</div>
+                  {preview.metadata && (
+                    <div className="component-path">
+                      {getPathWithLineAndColumn(preview.metadata)}
+                    </div>
                   )}
                 </div>
                 <button className="preview-btn" title="Preview component">
                   <Play size={12} />
                 </button>
+                {preview.metadata && (
+                  <button
+                    className="vscode-btn"
+                    title="Open in VS Code"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      if (preview.metadata) {
+                        navigateToFileInVscode(preview.metadata);
+                      }
+                    }}
+                  >
+                    <FileCode size={12} />
+                  </button>
+                )}
               </div>
             ))}
           </div>

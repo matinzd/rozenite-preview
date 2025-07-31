@@ -1,7 +1,20 @@
+export interface Metadata {
+  id: string;
+  name: string | null;
+  nameType: "literal" | "identifier" | "template";
+  callId: string;
+  line: number;
+  column: number;
+  componentType: string | null;
+  relativeFilename: string | null;
+  filePath: string | null;
+  isInsideReactComponent: boolean; 
+}
+
 export interface Preview {
   component: React.ComponentType;
   name: string;
-  path?: string; // TODO: Path to the component file
+  metadata?: Metadata;
 }
 
 export type DevToolsActionType =

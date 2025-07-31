@@ -14,12 +14,14 @@
     "resolveJsonModule": true,
     "isolatedModules": true,
     "noEmit": true,
-    "jsx": "react-jsx"
+    "jsx": "react-jsx",
+    "stripInternal": true
   },
   "include": [
     "src/**/*",
     "react-native.ts",
-    "rozenite.config.ts"
+    "rozenite.config.ts",
+    "babel-plugin/preview-babel-plugin-metadata.cjs"
   ],
   "exclude": ["node_modules", "dist", "build"]
 }

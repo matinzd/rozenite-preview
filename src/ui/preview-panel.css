@@ -278,3 +278,22 @@
 .content::-webkit-scrollbar-thumb:hover {
   background: #4a4a4a;
 }
+
+.vscode-btn {
+  background: transparent;
+  border: none;
+  color: #cccccc;
+  cursor: pointer;
+  padding: 6px;
+  border-radius: 3px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.vscode-btn:hover {
+  background: #404040;
+}
+.vscode-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}

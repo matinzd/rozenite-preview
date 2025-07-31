@@ -22,6 +22,17 @@ npm install --save-dev rozenite-preview@alpha
 yarn add -D rozenite-preview@alpha
 ```
 
+## Configuration
+
+Add the following to your `babel.config.js` to get more insights and metadata in your previews:
+
+```js
+module.exports = {
+  presets: ["module:metro-react-native-babel-preset"],
+  plugins: ["rozenite-preview/babel-plugin"]
+};
+```
+
 ## Usage
 
 1. **Register your components for preview:**
@@ -39,20 +50,16 @@ registerPreview("UserCard", UserCard);
 import { PreviewHost } from "rozenite-preview";
 
 export default function App() {
-  return (
-    <PreviewHost>
-      {/* your app */}
-    </PreviewHost>
-  );
+  return <PreviewHost>{/* your app */}</PreviewHost>;
 }
 ```
 
 3. **Open React Native DevTools and use the "Preview" panel**  
-Select and interact with your registered components in real time.
+   Select and interact with your registered components in real time.
 
-## Configuration
+## Known Issues
 
-No additional configuration is required. The plugin is automatically discovered by Rozenite when installed.
+- **HMR Support**: Hot Module Replacement (HMR) is not fully supported yet. You need to refresh the DevTools to see changes in deleted previews. Adding or modifying previews works for now.
 
 ## API
 
@@ -61,8 +68,8 @@ No additional configuration is required. The plugin is automatically discovered 
 
 ## Requirements
 
-- React Native 0.76+
-- React 18+
+- React Native 0.79+
+- React 19+
 
 ## License
 
