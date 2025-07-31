@@ -1,5 +1,6 @@
 const path = require("path");
 const crypto = require("crypto");
+const { isInsideReactComponent } = require("./react-helper.cjs");
 
 /**
  * Babel plugin that automatically that injects the file path and other metadata
@@ -120,6 +121,10 @@ function injectFilePathIntoRegisterPreviewCalls(
           t.objectProperty(
             t.identifier("relativeFilename"),
             t.stringLiteral(relativeFilename)
+          ),
+          t.objectProperty(
+            t.identifier("isInsideReactComponent"),
+            t.booleanLiteral(isInsideReactComponent(callPath))
           ),
           t.objectProperty(
             t.identifier("name"),

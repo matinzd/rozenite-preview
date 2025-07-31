@@ -22,6 +22,13 @@ export async function registerPreview(
    */
   metadata?: Metadata
 ) {
+  if (metadata?.isInsideReactComponent) {
+    console.error(
+      `Cannot register preview "${name}" from inside a React component. Please call it at the top level of your module.`
+    );
+    return;
+  }
+
   const entry: Preview = {
     name,
     component,

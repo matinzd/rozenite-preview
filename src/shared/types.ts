@@ -9,6 +9,7 @@ export interface Metadata {
   timestamp: number;
   relativeFilename: string | null;
   filePath: string | null;
+  isInsideReactComponent: boolean; 
 }
 
 export interface Preview {
