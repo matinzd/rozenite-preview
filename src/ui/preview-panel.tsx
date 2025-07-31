@@ -1,5 +1,5 @@
 import { useRozeniteDevToolsClient } from "@rozenite/plugin-bridge";
-import { Code, Eye, Package, Play, RefreshCw, Search } from "lucide-react";
+import { Code, Eye, FileCode, Package, Play, RefreshCw, Search } from "lucide-react";
 import { useEffect, useState } from "react";
 import { PreviewPluginEventMap } from "../shared/messaging";
 import { Preview, PREVIEW_PLUGIN_ID } from "../shared/types";
@@ -210,7 +210,7 @@ export default function PreviewPanel() {
                     navigateToFileInVscode(preview);
                   }}
                 >
-                  <Eye size={12} />
+                  <FileCode size={12} />
                 </button>
               </div>
             ))}
