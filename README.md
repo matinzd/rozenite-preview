@@ -1,5 +1,20 @@
 # Rozenite Preview
 
+<p align="center">
+  <a href="#badge">
+    <img alt="semantic-release: angular" src="https://img.shields.io/badge/semantic--release-angular-e10079?logo=semantic-release">
+  </a>
+  <a href="https://www.npmjs.com/package/rozenite-preview">
+    <img alt="npm latest version" src="https://img.shields.io/npm/v/rozenite-preview/latest.svg">
+  </a>
+  <a href="https://www.npmjs.com/package/rozenite-preview">
+    <img alt="npm beta version" src="https://img.shields.io/npm/v/rozenite-preview/beta.svg">
+  </a>
+  <a href="https://www.npmjs.com/package/rozenite-preview">
+    <img alt="npm alpha version" src="https://img.shields.io/npm/v/rozenite-preview/alpha.svg">
+  </a>
+</p>
+
 A Rozenite plugin that lets you select React Native components in DevTools and preview them live on your simulator. Ideal for rapid UI development, component testing, and debugging complex apps.
 
 **Powered by [Rozenite](https://github.com/callstackincubator/rozenite):**  
@@ -56,6 +71,10 @@ export default function App() {
 
 3. **Open React Native DevTools and use the "Preview" panel**  
    Select and interact with your registered components in real time.
+
+# Demo
+
+https://github.com/user-attachments/assets/dffe5803-fb6a-4b45-9621-48cbbdb25ad2
 
 ## Known Issues
 
