@@ -143,10 +143,6 @@ function injectFilePathIntoRegisterPreviewCalls(
             t.stringLiteral(metadata.componentType)
           ),
           t.objectProperty(
-            t.identifier("timestamp"),
-            t.numericLiteral(metadata.timestamp)
-          ),
-          t.objectProperty(
             t.identifier("line"),
             t.numericLiteral(metadata.line)
           ),
@@ -213,7 +209,6 @@ function getMetadata(callPath) {
     line: loc?.start?.line || 0,
     column: loc?.start?.column || 0,
     componentType: getComponentType(secondArg),
-    timestamp: Date.now(),
   };
 }
 

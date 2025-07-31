@@ -6,7 +6,6 @@ export interface Metadata {
   line: number;
   column: number;
   componentType: string | null;
-  timestamp: number;
   relativeFilename: string | null;
   filePath: string | null;
   isInsideReactComponent: boolean; 

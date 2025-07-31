@@ -9,7 +9,15 @@ interface PreviewHostProps {
   children?: React.ReactNode;
 }
 
-export const PreviewHost = (props: PreviewHostProps): JSX.Element => {
+export function PreviewHost(props: PreviewHostProps): JSX.Element {
+  if (process.env.NODE_ENV !== "development") {
+    return <>{props.children}</>;
+  }
+
+  return <PreviewHostImpl {...props} />;
+}
+
+export const PreviewHostImpl = (props: PreviewHostProps): JSX.Element => {
   const { children } = props;
 
   const client = useRozeniteDevToolsClient<PreviewPluginEventMap>({
@@ -31,13 +39,10 @@ export const PreviewHost = (props: PreviewHostProps): JSX.Element => {
       }
     );
 
-    const removePreviewClearListener = client.onMessage(
-      "preview-clear",
-      () => {
-        setPreviewName(null);
-        setComponent(null);
-      }
-    );
+    const removePreviewClearListener = client.onMessage("preview-clear", () => {
+      setPreviewName(null);
+      setComponent(null);
+    });
 
     return () => {
       removePreviewSelectListener.remove();
