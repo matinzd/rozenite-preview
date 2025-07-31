@@ -2,7 +2,7 @@ const path = require("path");
 const crypto = require("crypto");
 
 /**
- * Babel plugin that automatically injects the current file path as a third argument
+ * Babel plugin that automatically that injects the file path and other metadata
  * to registerPreview() calls imported from "rozenite-preview"
  */
 const ROZENITE_PREVIEW_MODULE = "rozenite-preview";
@@ -27,7 +27,7 @@ module.exports = function ({ types: t }) {
   return {
     visitor: {
       Program(path, state) {
-        const rozenitePreviewImports = collectRozeniteImports(path, t);
+        const rozenitePreviewImports = collectRozenitePreviewImports(path, t);
 
         if (rozenitePreviewImports.size === 0) {
           return;
@@ -50,11 +50,11 @@ module.exports = function ({ types: t }) {
  * @param {Object} t - Babel types helper
  * @returns {Set} Set of imported identifier names
  */
-function collectRozeniteImports(programPath, t) {
+function collectRozenitePreviewImports(programPath, t) {
   const imports = new Set();
 
   programPath.get("body").forEach((statement) => {
-    if (!isRozeniteImportDeclaration(statement)) {
+    if (!isRozenitePreviewImportDeclaration(statement)) {
       return;
     }
 
@@ -73,7 +73,7 @@ function collectRozeniteImports(programPath, t) {
  * @param {Object} statement - AST statement node
  * @returns {boolean}
  */
-function isRozeniteImportDeclaration(statement) {
+function isRozenitePreviewImportDeclaration(statement) {
   return (
     statement.isImportDeclaration() &&
     statement.node.source.value === ROZENITE_PREVIEW_MODULE
@@ -96,29 +96,21 @@ function isValidImportSpecifier(specifier, t) {
  * Traverses the AST and injects file paths into registerPreview calls
  * @param {Object} programPath - The program AST path
  * @param {Object} state - Babel plugin state
- * @param {Set} rozeniteImports - Set of imported identifiers from rozenite-preview
+ * @param {Set} rozenitePreviewImports - Set of imported identifiers from rozenite-preview
  * @param {Object} t - Babel types helper
  */
 function injectFilePathIntoRegisterPreviewCalls(
   programPath,
   state,
-  rozeniteImports,
+  rozenitePreviewImports,
   t
 ) {
   const filename = state.file.opts.filename || "";
   const relativeFilename = path.relative(process.cwd(), filename);
 
-  console.log(
-    "Traversing AST to inject file path and detail into registerPreview calls...",
-    {
-      filename,
-      relativeFilename,
-    }
-  );
-
   programPath.traverse({
     CallExpression(callPath) {
-      if (isTargetRegisterPreviewCall(callPath, rozeniteImports)) {
+      if (isTargetRegisterPreviewCall(callPath, rozenitePreviewImports)) {
         const metadata = getMetadata(callPath);
         const filePath = t.stringLiteral(filename);
         const id = getOrCreateId(relativeFilename, metadata.line);
@@ -226,16 +218,16 @@ function getMetadata(callPath) {
 /**
  * Determines if a call expression is a registerPreview call that needs modification
  * @param {Object} callPath - The call expression AST path
- * @param {Set} rozeniteImports - Set of imported identifiers from rozenite-preview
+ * @param {Set} rozenitePreviewImports - Set of imported identifiers from rozenite-preview
  * @returns {boolean}
  */
-function isTargetRegisterPreviewCall(callPath, rozeniteImports) {
+function isTargetRegisterPreviewCall(callPath, rozenitePreviewImports) {
   const callee = callPath.get("callee");
 
   return (
     callee.isIdentifier() &&
     callee.node.name === TARGET_FUNCTION &&
-    rozeniteImports.has(callee.node.name) &&
+    rozenitePreviewImports.has(callee.node.name) &&
     callPath.node.arguments.length === EXPECTED_ARGS_COUNT
   );
 }
