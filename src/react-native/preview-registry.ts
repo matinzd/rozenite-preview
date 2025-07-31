@@ -33,7 +33,9 @@ export async function registerPreview(
   const client = await getClient();
 
   if (!client) {
-    // pendingRegistrations.push(entry);
+    console.warn(
+      `No Rozenite DevTools client found! Cannot register preview: ${name}`
+    );
     return;
   }
 
