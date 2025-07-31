@@ -61,8 +61,8 @@ No additional configuration is required. The plugin is automatically discovered 
 
 ## Requirements
 
-- React Native 0.76+
-- React 18+
+- React Native 0.79+
+- React 19+
 
 ## License
 

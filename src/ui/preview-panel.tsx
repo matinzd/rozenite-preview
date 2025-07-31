@@ -1,12 +1,5 @@
 import { useRozeniteDevToolsClient } from "@rozenite/plugin-bridge";
-import {
-  Code,
-  Eye,
-  Package,
-  Play,
-  RefreshCw,
-  Search
-} from "lucide-react";
+import { Code, Eye, Package, Play, RefreshCw, Search } from "lucide-react";
 import { useEffect, useState } from "react";
 import { PreviewPluginEventMap } from "../shared/messaging";
 import { Preview, PREVIEW_PLUGIN_ID } from "../shared/types";
@@ -79,6 +72,29 @@ export default function PreviewPanel() {
     setIsRefreshing(true);
     client.send("request-initial-data", {});
     setTimeout(() => setIsRefreshing(false), 500);
+  };
+
+  const getPathWithLineAndColumn = (preview: Preview) => {
+    if (!preview.metadata?.filePath) {
+      return preview.metadata?.relativeFilename || "Unknown path";
+    }
+
+    const { relativeFilename, line, column } = preview.metadata;
+
+    return `${relativeFilename}${line ? `:${line}` : ""}${
+      column ? `:${column}` : ""
+    }`;
+  };
+
+  const navigateToFileInVscode = (preview: Preview) => {
+    if (!preview.metadata?.filePath) return;
+
+    const { filePath, line, column } = preview.metadata;
+    const vscodeUrl = `vscode://file/${filePath}${line ? `:${line}` : ""}${
+      column ? `:${column}` : ""
+    }`;
+
+    window.open(vscodeUrl, "_blank");
   };
 
   return (
@@ -177,12 +193,23 @@ export default function PreviewPanel() {
                     <Code className="component-icon" size={16} />
                     <span className="component-name">{preview.name}</span>
                   </div>
-                  {preview.path && (
-                    <div className="component-path">{preview.path}</div>
+                  {preview.metadata && (
+                    <div className="component-path">
+                      {getPathWithLineAndColumn(preview)}
+                    </div>
                   )}
                 </div>
                 <button className="preview-btn" title="Preview component">
                   <Play size={12} />
+                </button>
+                <button
+                  className="vscode-btn"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    navigateToFileInVscode(preview);
+                  }}
+                >
+                  <Eye size={12} />
                 </button>
               </div>
             ))}
