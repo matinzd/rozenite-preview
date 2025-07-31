@@ -204,6 +204,7 @@ export default function PreviewPanel() {
                 </button>
                 <button
                   className="vscode-btn"
+                  title="Open in VS Code"
                   onClick={(e) => {
                     e.stopPropagation();
                     navigateToFileInVscode(preview);

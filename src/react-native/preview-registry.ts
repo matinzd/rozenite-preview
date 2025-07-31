@@ -3,7 +3,7 @@ import { getClient } from "./setup-plugin";
 
 const registry = new Map<string, Preview>();
 
-export function registerPreview(
+export async function registerPreview(
   name: string,
   component: React.ComponentType
 ): Promise<void>;

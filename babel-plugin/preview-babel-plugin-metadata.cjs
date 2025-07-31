@@ -3,7 +3,7 @@ const crypto = require("crypto");
 const { isInsideReactComponent } = require("./react-helper.cjs");
 
 /**
- * Babel plugin that automatically that injects the file path and other metadata
+ * Babel plugin that automatically injects the file path and other metadata
  * to registerPreview() calls imported from "rozenite-preview"
  */
 const ROZENITE_PREVIEW_MODULE = "rozenite-preview";
@@ -201,9 +201,6 @@ function getMetadata(callPath) {
   } else if (firstArg && firstArg.type === "Identifier") {
     name = `<dynamic:${firstArg.name}>`;
     nameType = "identifier";
-  } else if (firstArg && firstArg.type === "TemplateLiteral") {
-    name = `<template:${getTemplateLiteralId(firstArg)}>`;
-    nameType = "template";
   }
 
   // Create a unique identifier for this specific call
