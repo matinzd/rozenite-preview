@@ -1,7 +1,7 @@
 {
   "name": "rozenite-preview",
   "version": "0.0.0-development",
-  "description": "Preview selected components from your React Native app in isolation, directly from DevTools. Ideal for rapid UI prototyping, component testing, or debugging in complex apps.",
+  "description": "A Rozenite plugin that lets you select React Native components in DevTools and preview them live on your simulator. Ideal for rapid UI development, component testing, and debugging complex apps.",
   "type": "module",
   "main": "./dist/react-native.cjs",
   "module": "./dist/react-native.js",
@@ -23,6 +23,22 @@
   "repository": {
     "url": "https://github.com/matinzd/rozenite-preview"
   },
+  "keywords": [
+    "rozenite-plugin",
+    "react-native-devtools",
+    "rozenite",
+    "react-native",
+    "devtools",
+    "react-native-preview",
+    "component-preview",
+    "ui-preview",
+    "plugin",
+    "react-native-plugin",
+    "live-preview",
+    "hot-reload",
+    "developer-tools",
+    "debugging"
+  ],
   "publishConfig": {
     "registry": "https://registry.npmjs.org/",
     "access": "public",

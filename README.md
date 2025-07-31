@@ -1,13 +1,13 @@
 # Rozenite Preview
 
-Preview selected components from your React Native app in isolation, directly from DevTools. Ideal for rapid UI prototyping, component testing, or debugging in complex apps.
+A Rozenite plugin that lets you select React Native components in DevTools and preview them live on your simulator. Ideal for rapid UI development, component testing, and debugging complex apps.
 
 **Powered by [Rozenite](https://github.com/callstackincubator/rozenite):**  
 A comprehensive toolkit for creating, developing, and integrating custom plugins into React Native DevTools.
 
 ## Features
 
-- 🔍 Instantly preview any registered React Native component in DevTools
+- 🔍 Instantly select and debug any registered React Native component from DevTools and view it on device/simulator
 - ⚡ Rapid UI prototyping and visual debugging
 - 🧩 Simple API for registering components to preview
 - 🛠️ Built as a Rozenite plugin for seamless DevTools integration
