@@ -76,10 +76,6 @@ export default function App() {
 
 https://github.com/user-attachments/assets/dffe5803-fb6a-4b45-9621-48cbbdb25ad2
 
-## Known Issues
-
-- **HMR Support**: Hot Module Replacement (HMR) is not fully supported yet. You need to refresh the DevTools to see changes in deleted previews. Adding or modifying previews works for now.
-
 ## API
 
 - `registerPreview(name: string, component: React.ComponentType)`

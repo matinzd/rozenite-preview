@@ -19,7 +19,8 @@ async function setupPlugin() {
 
   existingClient.onMessage("request-initial-data", () => {
     const previews = getPreviewComponents();
-    existingClient.send("preview-list", previews);
+    console.log(`Sending initial preview data: ${previews.length} previews found`, previews);
+    existingClient.send("registry-updated", previews);
   });
 }
 

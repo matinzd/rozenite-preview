@@ -39,14 +39,14 @@ export const PreviewHostImpl = (props: PreviewHostProps): JSX.Element => {
       }
     );
 
-    const removePreviewClearListener = client.onMessage("preview-clear", () => {
+    const showMainAppListener = client.onMessage("show-main-app", () => {
       setPreviewName(null);
       setComponent(null);
     });
 
     return () => {
       removePreviewSelectListener.remove();
-      removePreviewClearListener.remove();
+      showMainAppListener.remove();
     };
   }, [client]);
 

@@ -1,62 +1,78 @@
-import { Metadata, Preview } from "../shared/types";
-import { getClient } from "./setup-plugin";
+import { ComponentType } from "react";
+import { Metadata, MetroModule, Preview } from "../shared/types";
+import { createSignalMap } from "../utils/signal-map";
+import { client } from "./setup-plugin";
 
-const registry = new Map<string, Preview>();
-
-export async function registerPreview(
-  name: string,
-  component: React.ComponentType
-): Promise<void>;
-
-/**
- * Register a preview component.
- * @param name Preview name
- * @param component React component
- */
-export async function registerPreview(
-  name: string,
-  component: React.ComponentType,
-  /**
-   * This is injected by babel plugin
-   * @internal
-   */
-  metadata?: Metadata
-) {
-  if (process.env.NODE_ENV !== "development") {
-    return;
-  }
-
-  if (metadata?.isInsideReactComponent) {
-    console.error(
-      `Cannot register preview "${name}" from inside a React component. Please call it at the top level of your module.`
-    );
-    return;
-  }
-
-  const entry: Preview = {
-    name,
-    component,
-    metadata,
-  };
-
-  registry.set(name, entry);
-
-  const client = await getClient();
-
-  if (!client) {
-    console.warn(
-      `No Rozenite DevTools client found! Cannot register preview: ${name}`
-    );
-    return;
-  }
-
-  client.send("preview-added", entry);
-}
+const registry = createSignalMap<number, Preview[]>(() => {
+  const previews = getPreviewComponents();
+  client?.send("registry-updated", previews);
+});
 
 export function getPreviewComponents(): Preview[] {
-  return Array.from(registry.values());
+  return Array.from(registry.values()).flatMap((entry) =>
+    entry.map((e) => ({
+      name: e.name,
+      component: e.component,
+      metadata: e.metadata,
+    }))
+  );
 }
 
 export function getComponentByName(name: string) {
-  return registry.get(name)?.component;
+  const previews = Array.from(registry.values())
+    .flatMap((entry) => entry)
+    .find((e) => e.name === name);
+  return previews?.component;
+}
+
+/**
+ * 
+ * @internal
+ */
+const __registerPreviewInternal = (
+  module: MetroModule,
+  name: string,
+  component: ComponentType,
+  metadata?: Metadata
+) => {
+  if (
+    process.env.NODE_ENV !== "development" ||
+    !module.hot ||
+    module.id === undefined
+  ) {
+    console.warn(
+      `Cannot register preview "${name}" in production or in non Metro environment.`
+    );
+    return;
+  }
+
+  let moduleId = module.id;
+
+  const originalDisposeCallback = module.hot._disposeCallback;
+
+  module.hot._disposeCallback = () => {
+    originalDisposeCallback?.();
+    registry.delete(moduleId);
+  };
+
+  const current = registry.get(module.id) || [];
+
+  const updated = [
+    ...current.filter((entry) => entry.name !== name),
+    { name, component, metadata },
+  ];
+
+  registry.set(module.id, updated);
+};
+
+/**
+ * Register a preview component.
+ *
+ * @param name Preview name
+ * @param component React component
+ */
+export function registerPreview(name: string, component: React.ComponentType) {
+  __registerPreviewInternal(
+    ...(arguments as unknown as [MetroModule, string, ComponentType, Metadata])
+  );
 }

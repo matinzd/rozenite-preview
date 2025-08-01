@@ -40,6 +40,12 @@ module.exports = function ({ types: t }) {
           rozenitePreviewImports,
           t
         );
+
+        injectMetroModuleIntoRegisterPreviewCalls(
+          path,
+          rozenitePreviewImports,
+          t
+        );
       },
     },
   };
@@ -218,13 +224,32 @@ function getMetadata(callPath) {
  * @param {Set} rozenitePreviewImports - Set of imported identifiers from rozenite-preview
  * @returns {boolean}
  */
-function isTargetRegisterPreviewCall(callPath, rozenitePreviewImports) {
+function isTargetRegisterPreviewCall(
+  callPath,
+  rozenitePreviewImports,
+  expectedArgs = EXPECTED_ARGS_COUNT
+) {
   const callee = callPath.get("callee");
 
   return (
     callee.isIdentifier() &&
     callee.node.name === TARGET_FUNCTION &&
     rozenitePreviewImports.has(callee.node.name) &&
-    callPath.node.arguments.length === EXPECTED_ARGS_COUNT
+    callPath.node.arguments.length === expectedArgs
   );
+}
+
+function injectMetroModuleIntoRegisterPreviewCalls(
+  programPath,
+  rozenitePreviewImports,
+  t
+) {
+  programPath.traverse({
+    CallExpression(callPath) {
+      if (isTargetRegisterPreviewCall(callPath, rozenitePreviewImports, 3)) {
+        const { node } = callPath;
+        node.arguments.unshift(t.identifier("module"));
+      }
+    },
+  });
 }

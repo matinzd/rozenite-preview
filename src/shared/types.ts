@@ -8,7 +8,7 @@ export interface Metadata {
   componentType: string | null;
   relativeFilename: string | null;
   filePath: string | null;
-  isInsideReactComponent: boolean; 
+  isInsideReactComponent: boolean;
 }
 
 export interface Preview {
@@ -17,14 +17,25 @@ export interface Preview {
   metadata?: Metadata;
 }
 
-export type DevToolsActionType =
-  | "preview:list" // DevTools → App: Request list of previewable components
-  | "preview:list-response" // App → DevTools: Send back the list
-  | "preview:select" // DevTools → App: Select and render a specific component
-  | "preview:clear" // DevTools → App: Clear the current preview
-  | "preview:update-props" // DevTools → App: Update props passed to previewed component
-  | "preview:get-current" // DevTools → App: Ask which component is currently previewed
-  | "preview:current-response" // App → DevTools: Respond with currently previewed component
-  | "preview:error"; // App → DevTools: Report an error (e.g. component not found)
-
 export const PREVIEW_PLUGIN_ID = "rozenite-preview";
+
+type HotModuleReloadingCallback = () => void;
+
+type HotModuleReloadingData = {
+  _acceptCallback?: HotModuleReloadingCallback;
+  _disposeCallback?: HotModuleReloadingCallback;
+  _didAccept: boolean;
+  accept: (callback?: HotModuleReloadingCallback) => void;
+  dispose: (callback?: HotModuleReloadingCallback) => void;
+};
+
+type ModuleID = number;
+
+type Exports = any;
+
+// https://github.com/facebook/metro/blob/a81c99cf103be00181aa635fef94c6e3385a47bb/packages/metro-runtime/src/polyfills/require.js#L51
+export type MetroModule = {
+  id?: ModuleID;
+  exports: Exports;
+  hot?: HotModuleReloadingData;
+};
