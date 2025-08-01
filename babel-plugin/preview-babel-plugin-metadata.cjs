@@ -22,7 +22,7 @@ module.exports = function ({ types: t }) {
           return;
         }
 
-        if (isTargetRegisterPreviewCall(callPath, rozenitePreviewImports)) {
+        if (isTargetRegisterPreviewCall(path, rozenitePreviewImports)) {
           injectFilePathIntoRegisterPreviewCalls(path, state, t);
 
           injectMetroModuleIntoRegisterPreviewCalls(path, t);
