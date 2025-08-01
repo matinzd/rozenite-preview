@@ -8,21 +8,16 @@ const registry = createSignalMap<number, Preview[]>(() => {
   client?.send("registry-updated", previews);
 });
 
+function flattenRegistryEntries() {
+  return Array.from(registry.values()).flat();
+}
+
 export function getPreviewComponents(): Preview[] {
-  return Array.from(registry.values()).flatMap((entry) =>
-    entry.map((e) => ({
-      name: e.name,
-      component: e.component,
-      metadata: e.metadata,
-    }))
-  );
+  return flattenRegistryEntries();
 }
 
 export function getComponentByName(name: string) {
-  const previews = Array.from(registry.values())
-    .flatMap((entry) => entry)
-    .find((e) => e.name === name);
-  return previews?.component;
+  return flattenRegistryEntries().find((entry) => entry.name === name)?.component || null;
 }
 
 /**
