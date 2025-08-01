@@ -31,32 +31,16 @@ export default function PreviewPanel() {
   );
 
   useEffect(() => {
-    if (!client) {
-      return;
-    }
-
     if (!client) return;
 
-    const previewSubscription = client.onMessage("preview-added", (preview) => {
-      setPreviews((prev) => {
-        const existingIndex = prev.findIndex((p) => p.name === preview.name);
-        if (existingIndex !== -1) {
-          const updated = [...prev];
-          updated[existingIndex] = preview;
-          return updated;
-        }
-        return [...prev, preview];
-      });
-    });
-
-    const previewListSubscription = client.onMessage("preview-list", (data) => {
-      setPreviews(data);
-    });
+    const previewListSubscription = client.onMessage(
+      "registry-updated",
+      setPreviews
+    );
 
     client.send("request-initial-data", {});
 
     return () => {
-      previewSubscription.remove();
       previewListSubscription.remove();
     };
   }, [client]);
@@ -71,7 +55,7 @@ export default function PreviewPanel() {
   const showMainApp = () => {
     if (!client) return;
 
-    client.send("preview-clear", {});
+    client.send("show-main-app", {});
   };
 
   const refreshPreviews = async () => {

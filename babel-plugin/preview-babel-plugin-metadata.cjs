@@ -1,28 +1,16 @@
 const path = require("path");
-const crypto = require("crypto");
+
 const { isInsideReactComponent } = require("./react-helper.cjs");
 
 /**
- * Babel plugin that automatically injects the file path and other metadata
- * to registerPreview() calls imported from "rozenite-preview"
+ * Babel plugin that automatically injects file path, relative filename,
+ * React component context, name, call site location, and other metadata
+ * into registerPreview() calls imported from "rozenite-preview".
+ * Also injects the Metro "module" object as the first argument.
  */
 const ROZENITE_PREVIEW_MODULE = "rozenite-preview";
 const TARGET_FUNCTION = "registerPreview";
 const EXPECTED_ARGS_COUNT = 2;
-
-const cache = {};
-
-function getOrCreateId(file, line) {
-  const key = `${file}:${line}`;
-  if (cache[key]) return cache[key];
-
-  const hash = crypto.createHash("md5").update(key).digest("hex").slice(0, 6);
-  const id = `${path
-    .basename(file, path.extname(file))
-    .toLowerCase()}_${line}_${hash}`;
-  cache[key] = id;
-  return id;
-}
 
 module.exports = function ({ types: t }) {
   return {
@@ -34,12 +22,18 @@ module.exports = function ({ types: t }) {
           return;
         }
 
-        injectFilePathIntoRegisterPreviewCalls(
-          path,
-          state,
-          rozenitePreviewImports,
-          t
-        );
+        path.traverse({
+          CallExpression(callPath) {
+            if (
+              !isTargetRegisterPreviewCall(callPath, rozenitePreviewImports)
+            ) {
+              return;
+            }
+
+            injectMetadataIntoRegisterPreviewCalls(callPath, state, t);
+            injectMetroModuleIntoRegisterPreviewCalls(callPath, t);
+          },
+        });
       },
     },
   };
@@ -94,67 +88,41 @@ function isValidImportSpecifier(specifier, t) {
 }
 
 /**
- * Traverses the AST and injects file paths into registerPreview calls
- * @param {Object} programPath - The program AST path
+ * Traverses the AST and injects metadata into registerPreview calls
+ * @param {Object} callPath - The call expression AST path
  * @param {Object} state - Babel plugin state
- * @param {Set} rozenitePreviewImports - Set of imported identifiers from rozenite-preview
  * @param {Object} t - Babel types helper
  */
-function injectFilePathIntoRegisterPreviewCalls(
-  programPath,
-  state,
-  rozenitePreviewImports,
-  t
-) {
+function injectMetadataIntoRegisterPreviewCalls(callPath, state, t) {
   const filename = state.file.opts.filename || "";
   const relativeFilename = path.relative(process.cwd(), filename);
 
-  programPath.traverse({
-    CallExpression(callPath) {
-      if (isTargetRegisterPreviewCall(callPath, rozenitePreviewImports)) {
-        const metadata = getMetadata(callPath);
-        const filePath = t.stringLiteral(filename);
-        const id = getOrCreateId(relativeFilename, metadata.line);
-        const argument = t.objectExpression([
-          t.objectProperty(t.identifier("id"), t.stringLiteral(id)),
-          t.objectProperty(t.identifier("filePath"), filePath),
-          t.objectProperty(
-            t.identifier("relativeFilename"),
-            t.stringLiteral(relativeFilename)
-          ),
-          t.objectProperty(
-            t.identifier("isInsideReactComponent"),
-            t.booleanLiteral(isInsideReactComponent(callPath))
-          ),
-          t.objectProperty(
-            t.identifier("name"),
-            t.stringLiteral(metadata.name)
-          ),
-          t.objectProperty(
-            t.identifier("nameType"),
-            t.stringLiteral(metadata.nameType)
-          ),
-          t.objectProperty(
-            t.identifier("callId"),
-            t.stringLiteral(metadata.callId)
-          ),
-          t.objectProperty(
-            t.identifier("componentType"),
-            t.stringLiteral(metadata.componentType)
-          ),
-          t.objectProperty(
-            t.identifier("line"),
-            t.numericLiteral(metadata.line)
-          ),
-          t.objectProperty(
-            t.identifier("column"),
-            t.numericLiteral(metadata.column)
-          ),
-        ]);
-        callPath.node.arguments.push(argument);
-      }
-    },
-  });
+  const metadata = getMetadata(callPath);
+  const filePath = t.stringLiteral(filename);
+  const argument = t.objectExpression([
+    t.objectProperty(t.identifier("filePath"), filePath),
+    t.objectProperty(
+      t.identifier("relativeFilename"),
+      t.stringLiteral(relativeFilename)
+    ),
+    t.objectProperty(
+      t.identifier("isInsideReactComponent"),
+      t.booleanLiteral(isInsideReactComponent(callPath))
+    ),
+    t.objectProperty(t.identifier("name"), t.stringLiteral(metadata.name)),
+    t.objectProperty(
+      t.identifier("nameType"),
+      t.stringLiteral(metadata.nameType)
+    ),
+    t.objectProperty(t.identifier("callId"), t.stringLiteral(metadata.callId)),
+    t.objectProperty(
+      t.identifier("componentType"),
+      t.stringLiteral(metadata.componentType)
+    ),
+    t.objectProperty(t.identifier("line"), t.numericLiteral(metadata.line)),
+    t.objectProperty(t.identifier("column"), t.numericLiteral(metadata.column)),
+  ]);
+  callPath.node.arguments.push(argument);
 }
 
 /**
@@ -227,4 +195,14 @@ function isTargetRegisterPreviewCall(callPath, rozenitePreviewImports) {
     rozenitePreviewImports.has(callee.node.name) &&
     callPath.node.arguments.length === EXPECTED_ARGS_COUNT
   );
+}
+
+/**
+ * Injects the Metro module into all registerPreview calls as the first argument.
+ * @param callPath - The call expression AST path
+ * @param t
+ */
+function injectMetroModuleIntoRegisterPreviewCalls(callPath, t) {
+  const { node } = callPath;
+  node.arguments.unshift(t.identifier("module"));
 }

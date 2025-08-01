@@ -8,7 +8,7 @@ import { getPreviewComponents } from "./preview-registry";
 
 export let client: RozeniteDevToolsClient<PreviewPluginEventMap> | null = null;
 
-export const getClient = () => {
+const getClient = () => {
   return getRozeniteDevToolsClient<PreviewPluginEventMap>(PREVIEW_PLUGIN_ID);
 };
 
@@ -19,7 +19,7 @@ async function setupPlugin() {
 
   existingClient.onMessage("request-initial-data", () => {
     const previews = getPreviewComponents();
-    existingClient.send("preview-list", previews);
+    existingClient.send("registry-updated", previews);
   });
 }
 
