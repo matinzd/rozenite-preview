@@ -78,7 +78,7 @@ const __registerPreviewInternal = (
  * @param name Preview name
  * @param component React component
  */
-export function registerPreview(name: string, component: React.ComponentType) {
+export function registerPreview(name: string, component: React.ComponentType) {  
   __registerPreviewInternal(
     ...(arguments as unknown as [MetroModule, string, ComponentType, Metadata])
   );
