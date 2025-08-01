@@ -23,18 +23,9 @@ module.exports = function ({ types: t }) {
         }
 
         if (isTargetRegisterPreviewCall(callPath, rozenitePreviewImports)) {
-          injectFilePathIntoRegisterPreviewCalls(
-            path,
-            state,
-            rozenitePreviewImports,
-            t
-          );
+          injectFilePathIntoRegisterPreviewCalls(path, state, t);
 
-          injectMetroModuleIntoRegisterPreviewCalls(
-            path,
-            rozenitePreviewImports,
-            t
-          );
+          injectMetroModuleIntoRegisterPreviewCalls(path, t);
         }
       },
     },
