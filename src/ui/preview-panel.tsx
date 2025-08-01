@@ -31,10 +31,6 @@ export default function PreviewPanel() {
   );
 
   useEffect(() => {
-    if (!client) {
-      return;
-    }
-
     if (!client) return;
 
     const previewListSubscription = client.onMessage(

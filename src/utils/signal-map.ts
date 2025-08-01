@@ -1,22 +1,22 @@
 export function createSignalMap<K, V>(
-  onChange: (type: 'set' | 'delete' | 'clear', key?: K, value?: V) => void
+  onChange: (type: "set" | "delete" | "clear", key?: K, value?: V) => void
 ) {
   const internal = new Map<K, V>();
 
   return {
     set(key: K, value: V) {
       internal.set(key, value);
-      onChange('set', key, value);
+      onChange("set", key, value);
       return this;
     },
     delete(key: K) {
       const existed = internal.delete(key);
-      if (existed) onChange('delete', key);
+      if (existed) onChange("delete", key);
       return existed;
     },
     clear() {
       internal.clear();
-      onChange('clear');
+      onChange("clear");
     },
     get(key: K) {
       return internal.get(key);
@@ -41,6 +41,6 @@ export function createSignalMap<K, V>(
     },
     forEach(cb: (value: V, key: K, map: Map<K, V>) => void) {
       internal.forEach(cb);
-    }
-  } as Map<K, V>;
+    },
+  };
 }
