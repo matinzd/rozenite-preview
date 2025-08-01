@@ -26,7 +26,7 @@ export function getComponentByName(name: string) {
 }
 
 /**
- * 
+ *
  * @internal
  */
 const __registerPreviewInternal = (
@@ -42,6 +42,13 @@ const __registerPreviewInternal = (
   ) {
     console.warn(
       `Cannot register preview "${name}" in production or in non Metro environment.`
+    );
+    return;
+  }
+
+  if (metadata?.isInsideReactComponent) {
+    console.error(
+      'Do not call "registerPreview" inside a React lifecycle. Use it at the top level of your module.'
     );
     return;
   }
