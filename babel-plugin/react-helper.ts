@@ -1,4 +1,6 @@
-function hasJSXInFunction(functionPath) {
+import { NodePath } from "@babel/core";
+
+export function hasJSXInFunction(functionPath: NodePath<any>): boolean {
   let hasJSX = false;
   functionPath.traverse({
     JSXElement() {
@@ -11,7 +13,7 @@ function hasJSXInFunction(functionPath) {
   return hasJSX;
 }
 
-function isInsideJSXExpression(path) {
+export function isInsideJSXExpression(path: NodePath<any>): boolean {
   return (
     path.findParent(
       (parent) =>
@@ -22,21 +24,18 @@ function isInsideJSXExpression(path) {
   );
 }
 
-function isInsideReactComponent(path) {
+export function isInsideReactComponent(path: NodePath<any>): boolean {
   if (!path.isCallExpression()) return false;
-
-  // Check if inside JSX
   if (isInsideJSXExpression(path)) return true;
-
   const functionParent = path.getFunctionParent();
   if (!functionParent) return false;
-
-  // React hooks pattern
   if (isInsideReactHook(path)) return true;
-
-  // Class component lifecycle methods
   if (functionParent.isClassMethod()) {
-    const methodName = functionParent.node.key?.name;
+    let methodName: string | undefined;
+    const key = functionParent.node.key;
+    if (key && typeof key === "object" && "name" in key && typeof key.name === "string") {
+      methodName = key.name;
+    }
     const reactMethods = [
       "render",
       "componentDidMount",
@@ -48,18 +47,15 @@ function isInsideReactComponent(path) {
       "shouldComponentUpdate",
       "getInitialState",
     ];
-    return reactMethods.includes(methodName);
+    return methodName ? reactMethods.includes(methodName) : false;
   }
-
-  // Functional component (function that returns JSX)
   if (functionParent.isFunction()) {
     return isLikelyFunctionalComponent(functionParent);
   }
-
   return false;
 }
 
-function isInsideReactHook(path) {
+export function isInsideReactHook(path: NodePath<any>): boolean {
   return (
     path.findParent((parent) => {
       if (!parent.isCallExpression()) return false;
@@ -70,14 +66,11 @@ function isInsideReactHook(path) {
   );
 }
 
-function isLikelyFunctionalComponent(functionPath) {
-  // Check if function name starts with capital letter (component convention)
+export function isLikelyFunctionalComponent(functionPath: NodePath<any>): boolean {
   const functionName = functionPath.node.id?.name;
   if (functionName && /^[A-Z]/.test(functionName)) {
     return hasJSXInFunction(functionPath);
   }
-
-  // Check if assigned to a variable with capital letter
   if (
     functionPath.isArrowFunctionExpression() ||
     functionPath.isFunctionExpression()
@@ -85,16 +78,13 @@ function isLikelyFunctionalComponent(functionPath) {
     const parent = functionPath.parent;
     if (
       parent.type === "VariableDeclarator" &&
-      parent.id.name &&
+      parent.id &&
+      parent.id.type === "Identifier" &&
+      typeof parent.id.name === "string" &&
       /^[A-Z]/.test(parent.id.name)
     ) {
       return hasJSXInFunction(functionPath);
     }
   }
-
   return false;
 }
-
-module.exports = {
-  isInsideReactComponent,
-};
