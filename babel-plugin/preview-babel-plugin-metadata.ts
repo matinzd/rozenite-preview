@@ -1,6 +1,8 @@
-const path = require("path");
-
-const { isInsideReactComponent } = require("./react-helper.cjs");
+import { PluginObj } from "@babel/core";
+import { NodePath } from "@babel/traverse";
+import * as t from "@babel/types";
+import path from "path";
+import { isInsideReactComponent } from "./react-helper";
 
 /**
  * Babel plugin that automatically injects file path, relative filename,
@@ -12,10 +14,12 @@ const ROZENITE_PREVIEW_MODULE = "rozenite-preview";
 const TARGET_FUNCTION = "registerPreview";
 const EXPECTED_ARGS_COUNT = 2;
 
-module.exports = function ({ types: t }) {
+type BabelTypes = typeof t;
+
+export default function previewBabelPlugin(): PluginObj {
   return {
     visitor: {
-      Program(path, state) {
+      Program(path: NodePath<t.Program>, state: any) {
         const rozenitePreviewImports = collectRozenitePreviewImports(path, t);
 
         if (rozenitePreviewImports.size === 0) {
@@ -23,13 +27,12 @@ module.exports = function ({ types: t }) {
         }
 
         path.traverse({
-          CallExpression(callPath) {
+          CallExpression(callPath: NodePath<t.CallExpression>) {
             if (
               !isTargetRegisterPreviewCall(callPath, rozenitePreviewImports)
             ) {
               return;
             }
-
             injectMetadataIntoRegisterPreviewCalls(callPath, state, t);
             injectMetroModuleIntoRegisterPreviewCalls(callPath, t);
           },
@@ -37,66 +40,49 @@ module.exports = function ({ types: t }) {
       },
     },
   };
-};
+}
 
-/**
- * Collects all identifiers imported from "rozenite-preview"
- * @param {Object} programPath - The program AST path
- * @param {Object} t - Babel types helper
- * @returns {Set} Set of imported identifier names
- */
-function collectRozenitePreviewImports(programPath, t) {
-  const imports = new Set();
-
+function collectRozenitePreviewImports(
+  programPath: NodePath<t.Program>,
+  t: BabelTypes
+) {
+  const imports = new Set<string>();
   programPath.get("body").forEach((statement) => {
     if (!isRozenitePreviewImportDeclaration(statement)) {
       return;
     }
-
-    statement.node.specifiers.forEach((specifier) => {
-      if (isValidImportSpecifier(specifier, t)) {
-        imports.add(specifier.local.name);
-      }
-    });
+    // Only ImportDeclaration nodes have specifiers
+    if (statement.isImportDeclaration()) {
+      statement.node.specifiers.forEach((specifier: any) => {
+        if (isValidImportSpecifier(specifier, t)) {
+          imports.add(specifier.local.name);
+        }
+      });
+    }
   });
-
   return imports;
 }
 
-/**
- * Checks if a statement is an import from "rozenite-preview"
- * @param {Object} statement - AST statement node
- * @returns {boolean}
- */
-function isRozenitePreviewImportDeclaration(statement) {
+function isRozenitePreviewImportDeclaration(statement: NodePath<any>) {
   return (
     statement.isImportDeclaration() &&
     statement.node.source.value === ROZENITE_PREVIEW_MODULE
   );
 }
 
-/**
- * Checks if a specifier is a valid import specifier (named or default)
- * @param {Object} specifier - Import specifier node
- * @param {Object} t - Babel types helper
- * @returns {boolean}
- */
-function isValidImportSpecifier(specifier, t) {
+function isValidImportSpecifier(specifier: any, t: BabelTypes) {
   return (
     t.isImportSpecifier(specifier) || t.isImportDefaultSpecifier(specifier)
   );
 }
 
-/**
- * Traverses the AST and injects metadata into registerPreview calls
- * @param {Object} callPath - The call expression AST path
- * @param {Object} state - Babel plugin state
- * @param {Object} t - Babel types helper
- */
-function injectMetadataIntoRegisterPreviewCalls(callPath, state, t) {
+function injectMetadataIntoRegisterPreviewCalls(
+  callPath: NodePath<t.CallExpression>,
+  state: any,
+  t: BabelTypes
+) {
   const filename = state.file.opts.filename || "";
   const relativeFilename = path.relative(process.cwd(), filename);
-
   const metadata = getMetadata(callPath);
   const filePath = t.stringLiteral(filename);
   const argument = t.objectExpression([
@@ -109,7 +95,10 @@ function injectMetadataIntoRegisterPreviewCalls(callPath, state, t) {
       t.identifier("isInsideReactComponent"),
       t.booleanLiteral(isInsideReactComponent(callPath))
     ),
-    t.objectProperty(t.identifier("name"), t.stringLiteral(metadata.name)),
+    t.objectProperty(
+      t.identifier("name"),
+      t.stringLiteral(metadata.name ?? "")
+    ),
     t.objectProperty(
       t.identifier("nameType"),
       t.stringLiteral(metadata.nameType)
@@ -125,14 +114,8 @@ function injectMetadataIntoRegisterPreviewCalls(callPath, state, t) {
   callPath.node.arguments.push(argument);
 }
 
-/**
- * Determines the component type from the second argument
- * @param {Object} componentArg - Component argument AST node
- * @returns {string} Component type description
- */
-function getComponentType(componentArg) {
+function getComponentType(componentArg: any): string {
   if (!componentArg) return "unknown";
-
   switch (componentArg.type) {
     case "Identifier":
       return `component:${componentArg.name}`;
@@ -146,19 +129,12 @@ function getComponentType(componentArg) {
   }
 }
 
-/**
- * Extracts detailed information from a registerPreview call
- * @param {Object} callPath - The call expression AST path
- * @returns {Object} Preview details including name, location, and arguments
- */
-function getMetadata(callPath) {
+function getMetadata(callPath: NodePath<t.CallExpression>) {
   const firstArg = callPath.node.arguments[0];
   const secondArg = callPath.node.arguments[1];
   const loc = callPath.node.loc;
-
-  let name = null;
+  let name: string | null = null;
   let nameType = "unknown";
-
   if (firstArg && firstArg.type === "StringLiteral") {
     name = firstArg.value;
     nameType = "literal";
@@ -166,10 +142,7 @@ function getMetadata(callPath) {
     name = `<dynamic:${firstArg.name}>`;
     nameType = "identifier";
   }
-
-  // Create a unique identifier for this specific call
   const callId = `${name}:${loc?.start?.line || 0}:${loc?.start?.column || 0}`;
-
   return {
     name,
     nameType,
@@ -180,15 +153,11 @@ function getMetadata(callPath) {
   };
 }
 
-/**
- * Determines if a call expression is a registerPreview call that needs modification
- * @param {Object} callPath - The call expression AST path
- * @param {Set} rozenitePreviewImports - Set of imported identifiers from rozenite-preview
- * @returns {boolean}
- */
-function isTargetRegisterPreviewCall(callPath, rozenitePreviewImports) {
+function isTargetRegisterPreviewCall(
+  callPath: NodePath<t.CallExpression>,
+  rozenitePreviewImports: Set<string>
+) {
   const callee = callPath.get("callee");
-
   return (
     callee.isIdentifier() &&
     callee.node.name === TARGET_FUNCTION &&
@@ -197,12 +166,10 @@ function isTargetRegisterPreviewCall(callPath, rozenitePreviewImports) {
   );
 }
 
-/**
- * Injects the Metro module into all registerPreview calls as the first argument.
- * @param callPath - The call expression AST path
- * @param t
- */
-function injectMetroModuleIntoRegisterPreviewCalls(callPath, t) {
+function injectMetroModuleIntoRegisterPreviewCalls(
+  callPath: NodePath<t.CallExpression>,
+  t: BabelTypes
+) {
   const { node } = callPath;
   node.arguments.unshift(t.identifier("module"));
 }

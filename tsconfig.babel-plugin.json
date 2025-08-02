@@ -1,0 +1,17 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "outDir": "./dist/babel-plugin",
+    "declaration": false,
+    "module": "commonjs",
+    "moduleResolution": "node",
+    "target": "es2022",
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
+    "skipLibCheck": true,
+    "isolatedModules": true,
+    "noEmit": false
+  },
+  "include": ["babel-plugin/preview-babel-plugin-metadata.ts", "babel-plugin/react-helper.ts"],
+  "exclude": ["node_modules", "dist", "build"]
+}

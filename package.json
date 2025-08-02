@@ -12,12 +12,12 @@
       "require": "./dist/react-native.cjs",
       "types": "./dist/react-native.d.ts"
     },
-    "./babel-plugin": "./babel-plugin/preview-babel-plugin-metadata.cjs"
+    "./babel-plugin": "./dist/babel-plugin/preview-babel-plugin-metadata.js"
   },
   "scripts": {
     "prepublishOnly": "bun run build",
     "semantic-release": "semantic-release",
-    "build": "rozenite build",
+    "build": "rozenite build && tsc --project tsconfig.babel-plugin.json",
     "dev": "rozenite dev"
   },
   "repository": {
@@ -48,6 +48,7 @@
     "@rozenite/plugin-bridge": "1.0.0-alpha.6"
   },
   "devDependencies": {
+    "@babel/core": "^7.28.0",
     "@rozenite/vite-plugin": "1.0.0-alpha.6",
     "@types/react": "~18.3.12",
     "lucide-react": "^0.534.0",
