@@ -1,8 +1,85 @@
-import { NodePath } from "@babel/core";
+import { NodePath } from "@babel/traverse";
+import * as t from "@babel/types";
 
-export function hasJSXInFunction(functionPath: NodePath<any>): boolean {
+export function isInsideReactComponent(
+  path: NodePath<t.CallExpression>
+): boolean {
+  // inside JSX
+  if (
+    path.findParent(
+      (p) =>
+        p.isJSXElement() || p.isJSXFragment() || p.isJSXExpressionContainer()
+    )
+  ) {
+    return true;
+  }
+
+  // hook
+  if (
+    path.findParent((p) => {
+      if (!p.isCallExpression()) return false;
+      const callee = p.node.callee;
+      return t.isIdentifier(callee) && /^use[A-Z]/.test(callee.name);
+    })
+  ) {
+    return true;
+  }
+
+  // class components
+  if (
+    path.findParent((p) => {
+      if (!p.isClassMethod()) return false;
+      return isReactClassComponent(p as NodePath<t.ClassMethod>);
+    })
+  ) {
+    return true;
+  }
+
+  // if inside a function that returns JSX
+  const functionParent = path.getFunctionParent();
+  if (functionParent && hasJSXReturn(functionParent)) {
+    return true;
+  }
+
+  return false;
+}
+
+function isReactClassComponent(methodPath: NodePath<t.ClassMethod>): boolean {
+  const classPath = methodPath.findParent((p) => p.isClassDeclaration());
+  if (!classPath || !classPath.isClassDeclaration()) return false;
+
+  const superClass = classPath.node.superClass;
+  if (!superClass) return false;
+
+  if (t.isIdentifier(superClass)) {
+    return ["Component", "PureComponent"].includes(superClass.name);
+  }
+
+  if (
+    t.isMemberExpression(superClass) &&
+    t.isIdentifier(superClass.object) &&
+    t.isIdentifier(superClass.property)
+  ) {
+    return (
+      superClass.object.name === "React" &&
+      ["Component", "PureComponent"].includes(superClass.property.name)
+    );
+  }
+
+  return false;
+}
+
+function hasJSXReturn(functionPath: NodePath<t.Function>): boolean {
   let hasJSX = false;
+
   functionPath.traverse({
+    ReturnStatement(returnPath) {
+      const argument = returnPath.node.argument;
+      if (argument && (t.isJSXElement(argument) || t.isJSXFragment(argument))) {
+        hasJSX = true;
+        returnPath.stop();
+      }
+    },
     JSXElement() {
       hasJSX = true;
     },
@@ -10,81 +87,6 @@ export function hasJSXInFunction(functionPath: NodePath<any>): boolean {
       hasJSX = true;
     },
   });
+
   return hasJSX;
-}
-
-export function isInsideJSXExpression(path: NodePath<any>): boolean {
-  return (
-    path.findParent(
-      (parent) =>
-        parent.isJSXExpressionContainer() ||
-        parent.isJSXElement() ||
-        parent.isJSXFragment()
-    ) !== null
-  );
-}
-
-export function isInsideReactComponent(path: NodePath<any>): boolean {
-  if (!path.isCallExpression()) return false;
-  if (isInsideJSXExpression(path)) return true;
-  const functionParent = path.getFunctionParent();
-  if (!functionParent) return false;
-  if (isInsideReactHook(path)) return true;
-  if (functionParent.isClassMethod()) {
-    let methodName: string | undefined;
-    const key = functionParent.node.key;
-    if (key && typeof key === "object" && "name" in key && typeof key.name === "string") {
-      methodName = key.name;
-    }
-    const reactMethods = [
-      "render",
-      "componentDidMount",
-      "componentDidUpdate",
-      "componentWillUnmount",
-      "getSnapshotBeforeUpdate",
-      "componentDidCatch",
-      "getDerivedStateFromError",
-      "shouldComponentUpdate",
-      "getInitialState",
-    ];
-    return methodName ? reactMethods.includes(methodName) : false;
-  }
-  if (functionParent.isFunction()) {
-    return isLikelyFunctionalComponent(functionParent);
-  }
-  return false;
-}
-
-export function isInsideReactHook(path: NodePath<any>): boolean {
-  return (
-    path.findParent((parent) => {
-      if (!parent.isCallExpression()) return false;
-      const callee = parent.node.callee;
-      if (callee.type !== "Identifier") return false;
-      return /^use[A-Z]/.test(callee.name);
-    }) !== null
-  );
-}
-
-export function isLikelyFunctionalComponent(functionPath: NodePath<any>): boolean {
-  const functionName = functionPath.node.id?.name;
-  if (functionName && /^[A-Z]/.test(functionName)) {
-    return hasJSXInFunction(functionPath);
-  }
-  if (
-    functionPath.isArrowFunctionExpression() ||
-    functionPath.isFunctionExpression()
-  ) {
-    const parent = functionPath.parent;
-    if (
-      parent.type === "VariableDeclarator" &&
-      parent.id &&
-      parent.id.type === "Identifier" &&
-      typeof parent.id.name === "string" &&
-      /^[A-Z]/.test(parent.id.name)
-    ) {
-      return hasJSXInFunction(functionPath);
-    }
-  }
-  return false;
 }

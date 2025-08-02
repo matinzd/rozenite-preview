@@ -1,4 +1,6 @@
-import { NodePath, PluginObj, types as t } from "@babel/core";
+import { PluginObj } from "@babel/core";
+import { NodePath } from "@babel/traverse";
+import * as t from "@babel/types";
 import path from "path";
 import { isInsideReactComponent } from "./react-helper";
 
@@ -12,7 +14,7 @@ const ROZENITE_PREVIEW_MODULE = "rozenite-preview";
 const TARGET_FUNCTION = "registerPreview";
 const EXPECTED_ARGS_COUNT = 2;
 
-type BabelTypes = typeof import("@babel/types");
+type BabelTypes = typeof t;
 
 export default function previewBabelPlugin(): PluginObj {
   return {
