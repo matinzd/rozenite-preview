@@ -22,5 +22,5 @@
     "react-native.ts",
     "rozenite.config.ts"
   ],
-  "exclude": ["node_modules", "dist", "build", "babel-plugin"]
+  "exclude": ["node_modules", "dist", "build"]
 }

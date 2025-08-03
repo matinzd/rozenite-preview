@@ -85,6 +85,7 @@ https://github.com/user-attachments/assets/dffe5803-fb6a-4b45-9621-48cbbdb25ad2
 
 - React Native 0.79+
 - React 19+
+- Node 18+
 
 ## License
 

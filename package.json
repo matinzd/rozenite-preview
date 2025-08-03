@@ -8,16 +8,20 @@
   "types": "./dist/react-native.d.ts",
   "exports": {
     ".": {
+      "types": "./dist/react-native.d.ts",
       "import": "./dist/react-native.js",
-      "require": "./dist/react-native.cjs",
-      "types": "./dist/react-native.d.ts"
+      "require": "./dist/react-native.cjs"
     },
-    "./babel-plugin": "./dist/babel-plugin/preview-babel-plugin-metadata.js"
+    "./babel-plugin": {
+      "require": "./dist/preview-babel-plugin.cjs",
+      "import": "./dist/preview-babel-plugin.js"
+    }
   },
   "scripts": {
-    "prepublishOnly": "bun run build",
+    "prepublishOnly": "bun run build && bun run build:babel-plugin",
     "semantic-release": "semantic-release",
-    "build": "rozenite build && tsc --project tsconfig.babel-plugin.json",
+    "build": "rozenite build",
+    "build:babel-plugin": "vite build --config vite.babel-plugin.config.ts",
     "dev": "rozenite dev"
   },
   "repository": {
