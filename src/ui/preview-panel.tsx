@@ -56,6 +56,7 @@ export default function PreviewPanel() {
     if (!client) return;
 
     client.send("show-main-app", {});
+    setSelectedPreview(null);
   };
 
   const refreshPreviews = async () => {
