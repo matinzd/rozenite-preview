@@ -53,7 +53,7 @@ module.exports = {
 1. **Register your components for preview:**
 
 ```ts
-import { registerPreview } from "rozenite-preview@alpha";
+import { registerPreview } from "rozenite-preview";
 
 registerPreview("MyButton", MyButton);
 registerPreview("UserCard", UserCard);
