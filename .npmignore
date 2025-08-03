@@ -1,5 +1,5 @@
-src/
-babel-plugin/
+/src/
+/babel-plugin/
 .github/
 node_modules/
 bun.lock
