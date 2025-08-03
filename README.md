@@ -30,11 +30,11 @@ A comprehensive toolkit for creating, developing, and integrating custom plugins
 ## Installation
 
 ```sh
-bun add -D rozenite-preview@alpha
+bun add -D rozenite-preview@beta
 # or
-npm install --save-dev rozenite-preview@alpha
+npm install --save-dev rozenite-preview@beta
 # or
-yarn add -D rozenite-preview@alpha
+yarn add -D rozenite-preview@beta
 ```
 
 ## Configuration
