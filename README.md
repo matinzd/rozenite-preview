@@ -74,7 +74,7 @@ export default function App() {
 
 # Demo
 
-https://github.com/user-attachments/assets/dffe5803-fb6a-4b45-9621-48cbbdb25ad2
+https://github.com/user-attachments/assets/71d3be4a-95be-4399-94e6-f099d7995ca7
 
 ## API
 
