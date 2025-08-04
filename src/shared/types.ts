@@ -33,8 +33,9 @@ type ModuleID = number;
 
 type Exports = any;
 
-// Ref: https://github.com/facebook/metro/blob/a81c99cf103be00181aa635fef94c6e3385a47bb/packages/metro-runtime/src/polyfills/require.js#L51
-export type MetroModule = {
+// Ref Metro: https://github.com/facebook/metro/blob/a81c99cf103be00181aa635fef94c6e3385a47bb/packages/metro-runtime/src/polyfills/require.js#L51
+// Ref RsPack: https://rspack.rs/api/runtime-api/hmr#dispose-or-adddisposehandler
+export type Module = {
   id?: ModuleID;
   exports: Exports;
   hot?: HotModuleReloadingData;
